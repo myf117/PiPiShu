@@ -1,0 +1,5 @@
+host: '49.234.124.126',
+port: '3306',
+user: 'root',
+password: 'Pp123!@#',
+database: 'pipishu',

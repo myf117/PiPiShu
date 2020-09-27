@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src='https://code.jquery.com/jquery-3.4.1.min.js'></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="js/sdk.js"></script>
+
+    <link rel="stylesheet" href="css/product.css">
+    <script>
+        // 查询产品
+        function showProduct() {
+            axios.get("/showProduct.do", {
+
+            }).then(res => {
+                console.log(res.data);
+                showList(res.data);
+            }).catch(e => {
+
+            })
+        }
+        function showList(arr) {
+            let ul = document.querySelector(".phone-right-mode");
+            ul.innerHTML = "";
+
+            for (let i = 0; i < arr.length; i++) {
+                let claz = arr[i];
+                let li = document.createElement("li");
+                ul.appendChild(li);
+                let div = document.createElement("div");
+                let img = document.createElement("img");
+                img.classList.add("ig");
+                img.src = claz.url;
+                div.appendChild(img);
+                let h3 = document.createElement("h3");
+                h3.classList.add("font-center");
+                h3.innerHTML = claz.name;
+                let p1 = document.createElement("p");
+                p1.classList.add("font-center");
+                p1.innerHTML = claz.inf;
+                let p2 = document.createElement("p");
+                p2.classList.add("font-center");
+                p2.classList.add("red");
+                let pspan1 = document.createElement("span");
+                pspan1.classList.add("newprice");
+                pspan1.innerHTML = claz.price;
+                let pspan2 = document.createElement("span");
+                pspan2.innerHTML = "元起";
+                p2.appendChild(pspan1);
+                p2.appendChild(pspan2);
+
+                let span1 = document.createElement("span");
+                span1.classList.add("del");
+                span1.innerHTML = "删除产品";
+                let span2 = document.createElement("span");
+                span2.classList.add("no");
+                span2.innerHTML = claz.id;
+                let span3 = document.createElement("span");
+                span3.classList.add("xiugai");
+                span3.innerHTML = "修改价格";
+
+                // 删除
+                span1.onclick = function () {
+                    let myid = this.parentElement.childNodes[5].innerHTML;
+                    console.log(myid);
+                    delProduct(myid);
+
+                };
+
+                // 修改价格
+                let flag = false;
+                span3.onclick = function () {
+                    flag = !flag;
+                    // let newpriceArr = document.querySelectorAll(".newprice");
+                    let price = this.parentElement.childNodes[3].childNodes[0];
+                    console.log(price);
+                    if (flag) {
+                        this.innerHTML = "保存";
+                        price.style.WebkitUserModify = "read-write";
+                        // console.log(newpriceArr);
+                        // console.log(newpriceArr[0].innerHTML);
+
+                    } else {
+                        this.innerHTML = "修改价格";
+                        let newprice = price.innerHTML;
+                        console.log(newprice);
+                        let productid = this.parentElement.childNodes[5].innerHTML;
+                        // console.log(productid);
+                        price.style.WebkitUserModify = "read-only";
+                        modifyProduct(productid, newprice);
+
+                    }
+
+                };
+
+
+                li.appendChild(div);
+                li.appendChild(h3);
+                li.appendChild(p1);
+                li.appendChild(p2);
+                li.appendChild(span1);
+                li.appendChild(span2);
+                li.appendChild(span3);
+            }
+
+        }
+
+        showProduct();
+
+        function tianjia() {
+            var tianjia = document.querySelector(".sort-title-more");
+            var bigBox = document.querySelector(".bigbox");
+            var smallBox = document.querySelector(".smallbox");
+            var tuiChu = document.querySelector(".tuichu");
+            var zhangHao = document.createElement("input");
+
+            bigBox.style.display = "block";
+            tuiChu.innerHTML = "&times;"
+            tuiChu.onclick = function () {
+                bigBox.style.display = "none";
+                showProduct();
+            }
+        }
+
+        //文件上传
+        function axiosupload() {
+            let bigBox = document.querySelector(".bigbox");
+            let name = document.getElementById("name").value;
+            let inf = document.getElementById("inf").value;
+            let price = document.getElementById("price").value;
+
+            let file = document.getElementById("choose").files[0];
+            let formData = new FormData();
+            formData.append("name", name);
+            formData.append("inf", inf);
+            formData.append("price", price);
+
+            formData.append("uploadFile", file, file.name);
+            const config = {
+                headers: {
+                    "Content-Type": "multipart/form-data;boundary=" + new Date().getTime()
+                }
+            };
+            axios.post("/uploadFile.do", formData, config).then(function (response) {
+                // document.getElementsByClassName("newImg")[0].src = response.data;
+                console.log(response.data);
+                showProduct();
+            }).catch(function (error) {
+                console.log(error);
+            });
+            bigBox.style.display = "none";            
+        }
+
+
+        // 删除产品
+        function delProduct(myid) {
+            axios.get("/delProduct.do", {
+                params: {
+                    id: myid
+                }
+            }).then(r => {
+                if (r.data == 1) {
+                    console.log(1);
+                    showProduct();
+                } else {
+
+                }
+            }).catch(e => {
+
+            })
+        }
+
+
+        // 修改产品价格
+        function modifyProduct(productid, price) {
+            console.log(1);
+            axios.post('/modifyProduct.do', {
+                price: price,
+                id: productid
+
+            }).then(res => {
+                if (res.data == 1) {
+                    showProduct();
+                }
+            }).catch(e => {
+                console.log(e);
+            })
+        }
+
+    </script>
+
+    <script>
+
+
+    </script>
+</head>
+
+<body>
+    <!-- 商品信息管理 -->
+    <div class="sort">
+        <div class="w center">
+            <h1>商品信息管理</h1>
+            <!-- 手机 -->
+            <div class="phone">
+                <!-- title -->
+                <div class="sort-title">
+                    <span>手机</span>
+                    <span class="sort-title-more" onclick="tianjia()">添加</span>
+                </div>
+                <!-- 手机商品展示 -->
+                <div class="sort-phone-show">
+                    <img class="phone-left-img" src="images/phone-left-img.jpg" alt="">
+                    <ul class="phone-right-mode">
+                        <!-- <li>
+                            <div>
+                                <img class="ig" src="images/01.jpg" alt="">
+                            </div>
+                            <h3 class="font-center">腾讯黑鲨</h3>
+                            <p class="font-center">骁龙865处理器，120Hz刷新率</p>
+                            <p class="font-center red">3999元起</p>
+                            <p class="del">删除产品</p>
+                        
+                        </li> -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 上传商品 -->
+    <div class="bigbox">
+        <div id="updateDiv" class="smallbox">
+            <span class="tuichu"></span>
+            <div class="box">
+                <p>
+                    商品名称：<input type="text" id="name">
+                </p>
+                <p>
+                    商品介绍：<input type="text" id="inf">
+                </p>
+                <p>
+                    商品价格：<input type="number" id="price">
+                </p>
+                <p>
+                    商品图片：<input type="file" id="choose">
+                </p>
+                <span class="btn" onclick="axiosupload()">上传商品</span>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/denglu.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        function login() {
+            let no = document.getElementById("no").value;
+            let pwd = document.getElementById("pwd").value;
+            let pwd1 = document.getElementById("pwd1").value;
+            let pwdError = document.querySelector(".pwdError");
+            if (pwd == pwd1) {
+                axios.post("/login.do", {
+                    no: no,
+                    pwd: pwd
+                }).then(res => {
+                    let list = res.data;
+                    if (list.length == 1) {
+                        document.cookie = "no=" + list[0].no;
+                        // console.log(document.cookie);
+                        location.href = "http://localhost:7001/public/product.html";
+                    }
+                }).catch(e => {
+                    console.log(e);
+                    
+                })
+                location.reload();
+            } else {
+                alert("密码错误");
+                location.reload();
+            }
+
+        }
+
+    </script>
+</head>
+</head>
+
+<body>
+    <div class="left">
+        <div class="sologan">
+            <h1>欢迎来到E商场</h1>
+        </div>
+        <div class="footer">
+            <p>帮助中心｜wecode123.com/</p>
+        </div>
+    </div>
+
+    <div class="right">
+        <table>
+            <caption>登录</caption>
+            <tr>
+                <td><label for="">账&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label><input type="text" id="no" style="width:330px;" placeholder="请输入账号"></input></td>
+            </tr>
+            <tr>
+                <td>用户名由3-5个字符组成</td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码</label><input type="password" id="pwd"
+                        style="width:330px;"></input>
+                </td>
+            </tr>
+            <td>请输入8-12位密码</td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="">确&nbsp;认&nbsp;密&nbsp;码</label><input type="password" id="pwd1"
+                        style="width:330px;"></input>
+                </td>
+            </tr>
+            <td>请输入8-12位密码</td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="resgit" onclick="login()">
+                        登录
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+</body>
+
+</html>
